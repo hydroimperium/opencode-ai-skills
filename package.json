@@ -1,0 +1,16 @@
+{
+  "name": "opencode-ai-skills",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenCode Desktop setup for AI skills: hidden agents, slash commands, and skills.",
+  "scripts": {
+    "validate": "node scripts/validate-skills.mjs && node scripts/validate-opencode.mjs",
+    "validate:skills": "node scripts/validate-skills.mjs",
+    "validate:opencode": "node scripts/validate-opencode.mjs",
+    "new": "node scripts/new-skill.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
