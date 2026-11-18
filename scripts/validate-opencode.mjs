@@ -89,18 +89,28 @@ async function checkAgents() {
       continue;
     }
     const mode = parsed.raw.split(/\r?\n/).find((line) => line.startsWith('mode:'));
-    if (!mode || !mode.includes('primary')) {
-      errors.push(`${relative}: mode must be primary`);
-    }
-    const hidden = parsed.raw.split(/\r?\n/).find((line) => line.startsWith('hidden:'));
-    if (!hidden || !hidden.includes('true')) {
-      errors.push(`${relative}: hidden must be true`);
-    }
-    const skillMatch = parsed.body.match(/Load the `([a-z0-9-]+)` skill/);
-    if (!skillMatch) {
-      errors.push(`${relative}: does not load a skill`);
-    } else if (!skillNames.has(skillMatch[1])) {
-      errors.push(`${relative}: references missing skill "${skillMatch[1]}"`);
+    const isCommandAgent = name.startsWith('cmd-');
+
+    if (isCommandAgent) {
+      if (!mode || !mode.includes('primary')) {
+        errors.push(`${relative}: mode must be primary`);
+      }
+      const hidden = parsed.raw.split(/\r?\n/).find((line) => line.startsWith('hidden:'));
+      if (!hidden || !hidden.includes('true')) {
+        errors.push(`${relative}: hidden must be true`);
+      }
+      const skillMatch = parsed.body.match(/Load the `([a-z0-9-]+)` skill/);
+      if (!skillMatch) {
+        errors.push(`${relative}: does not load a skill`);
+      } else if (!skillNames.has(skillMatch[1])) {
+        errors.push(`${relative}: references missing skill "${skillMatch[1]}"`);
+      }
+    } else {
+      if (!mode || !mode.includes('subagent')) {
+        errors.push(`${relative}: non-command agents must use mode: subagent`);
+      }
+      const desc = parsed.raw.split(/\r?\n/).find((line) => line.startsWith('description:'));
+      if (!desc) warnings.push(`${relative}: no description`);
     }
   }
 }
