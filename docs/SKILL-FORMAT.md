@@ -1,8 +1,20 @@
-# Формат OpenCode-навыков, команд и агентов
+# Формат навыков
 
-## Навыки
+Мы используем открытый стандарт [Agent Skills](https://agentskills.io/specification).
 
-Навыки лежат в `skills/<category>/<name>/SKILL.md` и следуют стандарту [Agent Skills](https://agentskills.io/specification).
+## Структура навыка
+
+```text
+skills/<category>/<name>/
+├── SKILL.md
+├── references/
+├── scripts/
+└── assets/
+```
+
+Категории: `meta`, `engineering`, `study`, `writing`, `language`, `work`, `data`, `product`, `design`.
+
+## `SKILL.md`
 
 ```markdown
 ---
@@ -19,46 +31,72 @@ metadata:
 Instructions...
 ```
 
-## Команды
+## Обязательные поля
 
-Команда лежит в `.opencode/commands/<name>.md`. Имя файла становится именем команды.
+| Поле | Правила |
+|---|---|
+| `name` | 1–64 символа, lowercase, цифры и дефисы, без `--`, совпадает с папкой |
+| `description` | 1–1024 символа, что делает и когда использовать |
+| `metadata.category` | Совпадает с папкой категории |
 
-```markdown
----
-description: "What the command does"
-agent: cmd-example
----
+## Необязательные поля
 
-$ARGUMENTS
+| Поле | Назначение |
+|---|---|
+| `compatibility` | Требования к окружению, до 500 символов |
+| `metadata` | Строковые пары: категория, версия, источник |
+| `allowed-tools` | Экспериментальное поле для предодобренных инструментов |
+
+## Формула description
+
+`description` — это не аннотация, а триггер. Агент читает его, чтобы решить, загружать ли навык. Пишите одним абзацем:
+
+```text
+<что делает>. Use when <когда использовать>. Trigger on "<EN-фраза>", "<RU-фраза>", "<ещё синоним>". <граница: для X используйте Y>. <гарантия качества>.
 ```
 
 Правила:
 
-- тело содержит только `$ARGUMENTS`;
-- никаких английских инструкций в теле;
-- `agent` указывает на парного агента `cmd-<command>`;
-- имя команды и имя агента должны совпадать.
+- Начинайте с глагола: `Reviews`, `Writes`, `Plans`, `Finds`.
+- Добавляйте `Use when ...` с конкретными ситуациями, а не общими словами.
+- Давайте 3–7 триггерных фраз, включая русские формулировки пользователя.
+- Указывайте границу, если есть пересечение: `For X use Y instead`.
+- Не перечисляйте всё тело навыка; description должен быть коротким и точным.
+- Проверяйте `npm run validate`: валидатор предупреждает, если нет `Use when`, триггеров, русских фраз или границы.
 
-## Агенты
+Пример:
 
-Агент лежит в `.opencode/agents/cmd-<command>.md`.
-
-```markdown
----
-description: OpenCode runner for /example
-mode: primary
-hidden: true
----
-
-Load the `example-skill` skill with the skill tool and follow it. The user's message is the task. Do not repeat these instructions.
+```text
+Reviews a branch, pull request, commit range, or uncommitted changes for correctness, standards, scope, tests, and risk. Use when the user asks to review code, check a PR, inspect a diff, or decide whether a change is ready to merge. Trigger on "review", "code review", "ревью", "проверь код", "посмотри PR". For security-only review use security-review instead.
 ```
 
-Правила:
+## Прогрессивное раскрытие
 
-- `mode: primary`;
-- `hidden: true`, чтобы не засорять список агентов;
-- агент должен загружать существующий навык;
-- инструкции остаются в системном промпте и не появляются в чате.
+1. **Метаданные** (`name`, `description`) — всегда в контексте.
+2. **Тело `SKILL.md`** — загружается при срабатывании, до 500 строк.
+3. **Ресурсы** (`references/`, `scripts/`, `assets/`) — по необходимости.
+
+Если тело приближается к 500 строкам, вынесите детали в `references/` и оставьте в `SKILL.md` ссылки.
+
+## Стиль инструкций
+
+- Пишите на английском, в императиве.
+- Объясняйте, зачем нужен шаг, а не только что сделать.
+- Используйте положительные формулировки: «сделай X», а не «не делай Y».
+- Давайте конкретные критерии готовности.
+- Не просите модель показывать скрытые рассуждения; просите выводы, доказательства и проверки.
+- Для агентных задач указывайте границы, stop conditions и что считать успехом.
+
+## Ссылки на файлы
+
+Ссылки делайте относительными от папки навыка:
+
+```text
+See references/patterns.md.
+Run scripts/check.py.
+```
+
+Не углубляйтесь больше чем на один уровень.
 
 ## Валидация
 
@@ -68,7 +106,16 @@ npm run validate
 
 Проверяются:
 
-- навыки;
-- команды: `$ARGUMENTS`, `agent`, отсутствие лишнего текста;
-- агенты: `mode`, `hidden`, существование навыка;
-- соответствие «команда ↔ агент».
+- наличие `SKILL.md` в `skills/<category>/<name>/`;
+- корректный frontmatter;
+- совпадение `name` с папкой;
+- совпадение `metadata.category` с категорией;
+- длина `description` и `compatibility`;
+- размер тела;
+- существование локальных файлов, на которые есть ссылки.
+
+## Совместимость
+
+Навыки должны работать в любом агенте, который поддерживает Agent Skills. Не привязывайтесь к инструментам конкретного вендора, если это не необходимо. Если нужны инструменты, укажите это в `compatibility`.
+
+Команды и OpenCode-агенты вынесены в отдельный репозиторий `opencode-ai-skills`.

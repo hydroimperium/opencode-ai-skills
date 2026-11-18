@@ -1,6 +1,6 @@
 # OpenCode AI Skills
 
-Настройка OpenCode Desktop: 38 навыков, 39 слэш-команд и скрытые агенты, чтобы английские инструкции не появлялись в чате.
+Настройка OpenCode Desktop: 43 навыка, 44 слэш-команды и скрытые агенты, чтобы английские инструкции не появлялись в чате.
 
 ## Установка
 
@@ -35,9 +35,11 @@ chmod +x install.sh
 
 В чате видно только твой текст. Агент сам загружает нужный навык и следует ему.
 
+Навыки выбираются автоматически по `description`. Команда нужна, когда хочешь вызвать навык явно или передать ему аргументы.
+
 ## Команды
 
-`/prompt`, `/plan`, `/spec`, `/tasks`, `/grill-me`, `/brainstorm`, `/orchestrate`, `/review`, `/debug`, `/test`, `/verify`, `/commit`, `/api`, `/refactor`, `/docs`, `/research`, `/learn`, `/notes`, `/lab`, `/coursework`, `/gost`, `/originality`, `/write`, `/humanize`, `/edit-ru`, `/translate`, `/ru-quality`, `/meeting`, `/slides`, `/project`, `/career`, `/data`, `/sql`, `/prd`, `/prioritize`, `/ui`, `/a11y`, `/skill`, `/handoff`.
+`/prompt`, `/plan`, `/spec`, `/tasks`, `/grill-me`, `/brainstorm`, `/orchestrate`, `/review`, `/debug`, `/test`, `/verify`, `/commit`, `/api`, `/refactor`, `/docs`, `/research`, `/learn`, `/notes`, `/lab`, `/coursework`, `/gost`, `/originality`, `/write`, `/humanize`, `/edit-ru`, `/translate`, `/ru-quality`, `/meeting`, `/slides`, `/project`, `/career`, `/data`, `/sql`, `/prd`, `/prioritize`, `/ui`, `/a11y`, `/skill`, `/handoff`, `/agent-ready`, `/planning-with-files`, `/recursive-decomposition`, `/find-skills`, `/webapp-testing`.
 
 `/grill-me` задаёт вопросы по одному через интерактивное окно OpenCode, с вариантами и рекомендованным ответом. После ответа сам задаёт следующий вопрос.
 
